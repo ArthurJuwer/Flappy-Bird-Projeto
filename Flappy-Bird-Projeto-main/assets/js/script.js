@@ -54,7 +54,6 @@ function MySprite(img_url) {
   this.angle = 0;
   this.flipV = false;
   this.flipH = false;
-  this.finish = false;
 }
 MySprite.prototype.Do_Frame_Things = function () {
   ctx.save();
@@ -162,15 +161,8 @@ function show_the_power_ups() {
 }
 
 function check_for_end_game() {
-  for (var i = 0; i < pipes.length; i++) {
-    if (ImagesTouching(bird, pipes[i])) {
-      if(pipes[i].finish) {
-        game_mode = 'finish'
-      } else {
-        game_mode = 'over';
-      }
-    }
-  }
+  for (var i = 0; i < pipes.length; i++)
+    if (ImagesTouching(bird, pipes[i])) game_mode = 'over';
 }
 function display_intro_instructions() {
   if (logoLoaded) {
@@ -209,44 +201,6 @@ function display_game_over() {
 
   ctx.font = '25px Rubik';
   ctx.fillText('Suas Informações:', modalX + modalWidth / 2, modalY + 35);
-  ctx.font = '15px Rubik';
-  ctx.fillText('Cidade: ' + cidades[cidadeAtual], modalX + modalWidth / 2, modalY + 70);
-  ctx.fillText('Itens Coletados: ' + score, modalX + modalWidth / 2, modalY + 100);
-  ctx.fillText('Tempo Total: ' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds, modalX + modalWidth / 2, modalY + 130);
-
-  ctx.font = '20px Rubik';
-  ctx.fillText('Clique na tela para reiniciar', myCanvas.width / 2, modalY + modalHeight + 40);
-}
-
-
-function display_game_finish() {
-  const modalWidth = 260;
-  const modalHeight = 175;
-  const modalX = (myCanvas.width - modalWidth) / 2;
-  const modalY = (myCanvas.height - modalHeight) / 2;
-
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-  ctx.fillRect(0, 0, myCanvas.width, myCanvas.height);
-
-  ctx.fillStyle = 'rgb(166, 90, 0)';
-  ctx.beginPath();
-  ctx.moveTo(modalX + 30, modalY);
-  ctx.lineTo(modalX + modalWidth - 30, modalY);
-  ctx.quadraticCurveTo(modalX + modalWidth, modalY, modalX + modalWidth, modalY + 30);
-  ctx.lineTo(modalX + modalWidth, modalY + modalHeight - 30);
-  ctx.quadraticCurveTo(modalX + modalWidth, modalY + modalHeight, modalX + modalWidth - 30, modalY + modalHeight);
-  ctx.lineTo(modalX + 30, modalY + modalHeight);
-  ctx.quadraticCurveTo(modalX, modalY + modalHeight, modalX, modalY + modalHeight - 30);
-  ctx.lineTo(modalX, modalY + 30);
-  ctx.quadraticCurveTo(modalX, modalY, modalX + 30, modalY);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle = 'white';
-  ctx.textAlign = 'center';
-
-  ctx.font = '25px Rubik';
-  ctx.fillText('Parabéns!', modalX + modalWidth / 2, modalY + 35);
   ctx.font = '15px Rubik';
   ctx.fillText('Cidade: ' + cidades[cidadeAtual], modalX + modalWidth / 2, modalY + 70);
   ctx.fillText('Frutas Coletadas: ' + score, modalX + modalWidth / 2, modalY + 100);
@@ -309,10 +263,59 @@ function add_all_my_pipes() {
   add_pipe(6240, 250, gap_width);
   add_pipe(6400, 80, gap_width);
   var finish_line = new MySprite('http://s2js.com/img/etc/flappyend.png');
+
+  
   finish_line.x = 6700;
   finish_line.velocity_x = pipe_speed;
-  finish_line.finish = true;
   pipes.push(finish_line);
+}
+function end_game() {
+  const modalWidth = 300;
+  const modalHeight = 240;
+  const modalX = (myCanvas.width - modalWidth) / 2;
+  const modalY = (myCanvas.height - modalHeight) / 2;
+
+  // Fundo semi-transparente
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, myCanvas.width, myCanvas.height);
+
+  // Caixa de mensagem
+  ctx.fillStyle = 'black';
+  ctx.beginPath();
+  ctx.moveTo(modalX + 30, modalY);
+  ctx.lineTo(modalX + modalWidth - 30, modalY);
+  ctx.quadraticCurveTo(modalX + modalWidth, modalY, modalX + modalWidth, modalY + 30);
+  ctx.lineTo(modalX + modalWidth, modalY + modalHeight - 30);
+  ctx.quadraticCurveTo(modalX + modalWidth, modalY + modalHeight, modalX + modalWidth - 30, modalY + modalHeight);
+  ctx.lineTo(modalX + 30, modalY + modalHeight);
+  ctx.quadraticCurveTo(modalX, modalY + modalHeight, modalX, modalY + modalHeight - 30);
+  ctx.lineTo(modalX, modalY + 30);
+  ctx.quadraticCurveTo(modalX, modalY, modalX + 30, modalY);
+  ctx.closePath();
+  ctx.fill();
+
+  // Texto na caixa de mensagem
+  ctx.fillStyle = 'white';
+  ctx.textAlign = 'center';
+
+  ctx.font = '25px Rubik';
+  ctx.fillText('Parabéns, você chegou ao final!', modalX + modalWidth / 2, modalY + 35);
+
+  ctx.font = '15px Rubik';
+  ctx.fillText('Cidade: ' + cidades[cidadeAtual], modalX + modalWidth / 2, modalY + 80);
+  ctx.fillText('Frutas Coletadas: ' + score, modalX + modalWidth / 2, modalY + 110);
+  ctx.fillText('Tempo Total: ' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds, modalX + modalWidth / 2, modalY + 140);
+
+  ctx.font = '20px Rubik';
+  ctx.fillText('Clique na tela para reiniciar', myCanvas.width / 2, modalY + modalHeight + 50);
+}
+
+// Suponha que você tenha um código que verifica se o jogador chegou ao final
+// Exemplo hipotético:
+function verificarChegadaAoFinal() {
+  if (bird.x > finish_line.x) {
+    end_game();  // Chamada da função end_game quando o jogador chega ao final
+  }
 }
 
 function add_power_up(x_pos, y_pos, city) {  
@@ -363,7 +366,7 @@ function add_power_up(x_pos, y_pos, city) {
           divpowerup++          
           break
         case 12:
-          power_up = new MySprite('../assets/images/powerups/FlappyChocolate.png')          
+          power_up = new MySprite('../assets/images/powerups/FlappyIce.png')          
           divpowerup++          
           break
         case 13:
@@ -384,32 +387,32 @@ function add_power_up_in_middle(x_pos, top_of_gap, gap_width, city) {
 }
 function add_all_power_up() {
   var gap_width = 180; 
-  add_power_up_in_middle(500, 60, gap_width, 1);
-  add_power_up_in_middle(800, 10, gap_width, 1);
-  add_power_up_in_middle(1000, 230, gap_width, 2);
-  add_power_up_in_middle(1200, 110, gap_width, 2);
-  add_power_up_in_middle(1600, 60, gap_width, 3);
-  add_power_up_in_middle(1800, 110, gap_width, 3);
-  add_power_up_in_middle(2000, 160, gap_width, 4);
-  add_power_up_in_middle(2200, 210, gap_width, 4);
-  add_power_up_in_middle(2400, -10, gap_width, 5);
-  add_power_up_in_middle(2700, 260, gap_width, 5);
-  add_power_up_in_middle(3000, 60, gap_width, 6);
-  add_power_up_in_middle(3300, 210, gap_width, 6);
-  add_power_up_in_middle(3600, 10, gap_width, 7);
-  add_power_up_in_middle(3900, 60, gap_width, 7);
-  add_power_up_in_middle(4100, 80, gap_width, 8);
-  add_power_up_in_middle(4350, 210, gap_width, 8);
-  add_power_up_in_middle(4700, 110, gap_width, 9);
-  add_power_up_in_middle(4900, 60, gap_width, 9);
-  add_power_up_in_middle(5100, 110, gap_width, 10); 
-  add_power_up_in_middle(5270, 160, gap_width, 10);
-  add_power_up_in_middle(5390, 160, gap_width, 11);
-  add_power_up_in_middle(5680, 20, gap_width, 11);
-  add_power_up_in_middle(5900, 260, gap_width, 12);
-  add_power_up_in_middle(6100, 80, gap_width, 12);
-  add_power_up_in_middle(6240, 210, gap_width, 13);
-  add_power_up_in_middle(6400, 10, gap_width, 13);
+  add_power_up_in_middle(484, 60, gap_width, 1);
+  add_power_up_in_middle(784, 10, gap_width, 1);
+  add_power_up_in_middle(984, 210, gap_width, 2);
+  add_power_up_in_middle(1184, 110, gap_width, 2);
+  add_power_up_in_middle(1584, 60, gap_width, 3);
+  add_power_up_in_middle(1784, 110, gap_width, 3);
+  add_power_up_in_middle(1984, 160, gap_width, 4);
+  add_power_up_in_middle(2184, 210, gap_width, 4);
+  add_power_up_in_middle(2384, -10, gap_width, 5);
+  add_power_up_in_middle(2684, 260, gap_width, 5);
+  add_power_up_in_middle(2984, 60, gap_width, 6);
+  add_power_up_in_middle(3284, 210, gap_width, 6);
+  add_power_up_in_middle(3584, 10, gap_width, 7);
+  add_power_up_in_middle(3884, 60, gap_width, 7);
+  add_power_up_in_middle(4084, 80, gap_width, 8);
+  add_power_up_in_middle(4334, 210, gap_width, 8);
+  add_power_up_in_middle(4684, 110, gap_width, 9);
+  add_power_up_in_middle(4884, 60, gap_width, 9);
+  add_power_up_in_middle(5094, 110, gap_width, 10); 
+  add_power_up_in_middle(5264, 160, gap_width, 10);
+  add_power_up_in_middle(5384, 160, gap_width, 11);
+  add_power_up_in_middle(5674, 20, gap_width, 11);
+  add_power_up_in_middle(5884, 260, gap_width, 12);
+  add_power_up_in_middle(6084, 80, gap_width, 12);
+  add_power_up_in_middle(6224, 210, gap_width, 13);
+  add_power_up_in_middle(6384, 10, gap_width, 13);
 
 }
 
@@ -442,7 +445,7 @@ ctx.drawImage(plate, 0, 0);
   var timeText = 'Tempo: ' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
   ctx.fillText(timeText, posXText, posY + 40);
 
-  ctx.fillText('Itens: ' + score, posXText, posY + 60);
+  ctx.fillText('Frutas: ' + score, posXText, posY + 60);
   
   ctx.fillText(cidades[cidadeAtual], posXText, posY + 80);
 }
@@ -489,12 +492,6 @@ function Do_a_Frame() {
     case 'over': {
       make_bird_slow_and_fall();
       display_game_over();
-      ingame = false;
-      break;
-    }
-    
-    case 'finish': {
-      display_game_finish();
       ingame = false;
       break;
     }
