@@ -316,7 +316,7 @@ function add_power_up(x_pos, y_pos, city) {
           divpowerup++          
           break
         case 12:
-          power_up = new MySprite('../assets/images/powerups/FlappyIce.png')          
+          power_up = new MySprite('../assets/images/powerups/FlappyChocolate.png')          
           divpowerup++          
           break
         case 13:
@@ -337,32 +337,32 @@ function add_power_up_in_middle(x_pos, top_of_gap, gap_width, city) {
 }
 function add_all_power_up() {
   var gap_width = 180; 
-  add_power_up_in_middle(484, 60, gap_width, 1);
-  add_power_up_in_middle(784, 10, gap_width, 1);
-  add_power_up_in_middle(984, 210, gap_width, 2);
-  add_power_up_in_middle(1184, 110, gap_width, 2);
-  add_power_up_in_middle(1584, 60, gap_width, 3);
-  add_power_up_in_middle(1784, 110, gap_width, 3);
-  add_power_up_in_middle(1984, 160, gap_width, 4);
-  add_power_up_in_middle(2184, 210, gap_width, 4);
-  add_power_up_in_middle(2384, -10, gap_width, 5);
-  add_power_up_in_middle(2684, 260, gap_width, 5);
-  add_power_up_in_middle(2984, 60, gap_width, 6);
-  add_power_up_in_middle(3284, 210, gap_width, 6);
-  add_power_up_in_middle(3584, 10, gap_width, 7);
-  add_power_up_in_middle(3884, 60, gap_width, 7);
-  add_power_up_in_middle(4084, 80, gap_width, 8);
-  add_power_up_in_middle(4334, 210, gap_width, 8);
-  add_power_up_in_middle(4684, 110, gap_width, 9);
-  add_power_up_in_middle(4884, 60, gap_width, 9);
-  add_power_up_in_middle(5094, 110, gap_width, 10); 
-  add_power_up_in_middle(5264, 160, gap_width, 10);
-  add_power_up_in_middle(5384, 160, gap_width, 11);
-  add_power_up_in_middle(5674, 20, gap_width, 11);
-  add_power_up_in_middle(5884, 260, gap_width, 12);
-  add_power_up_in_middle(6084, 80, gap_width, 12);
-  add_power_up_in_middle(6224, 210, gap_width, 13);
-  add_power_up_in_middle(6384, 10, gap_width, 13);
+  add_power_up_in_middle(500, 60, gap_width, 1);
+  add_power_up_in_middle(800, 10, gap_width, 1);
+  add_power_up_in_middle(1000, 230, gap_width, 2);
+  add_power_up_in_middle(1200, 110, gap_width, 2);
+  add_power_up_in_middle(1600, 60, gap_width, 3);
+  add_power_up_in_middle(1800, 110, gap_width, 3);
+  add_power_up_in_middle(2000, 160, gap_width, 4);
+  add_power_up_in_middle(2200, 210, gap_width, 4);
+  add_power_up_in_middle(2400, -10, gap_width, 5);
+  add_power_up_in_middle(2700, 260, gap_width, 5);
+  add_power_up_in_middle(3000, 60, gap_width, 6);
+  add_power_up_in_middle(3300, 210, gap_width, 6);
+  add_power_up_in_middle(3600, 10, gap_width, 7);
+  add_power_up_in_middle(3900, 60, gap_width, 7);
+  add_power_up_in_middle(4100, 80, gap_width, 8);
+  add_power_up_in_middle(4350, 210, gap_width, 8);
+  add_power_up_in_middle(4700, 110, gap_width, 9);
+  add_power_up_in_middle(4900, 60, gap_width, 9);
+  add_power_up_in_middle(5100, 110, gap_width, 10); 
+  add_power_up_in_middle(5270, 160, gap_width, 10);
+  add_power_up_in_middle(5390, 160, gap_width, 11);
+  add_power_up_in_middle(5680, 20, gap_width, 11);
+  add_power_up_in_middle(5900, 260, gap_width, 12);
+  add_power_up_in_middle(6100, 80, gap_width, 12);
+  add_power_up_in_middle(6240, 210, gap_width, 13);
+  add_power_up_in_middle(6400, 10, gap_width, 13);
 
 }
 

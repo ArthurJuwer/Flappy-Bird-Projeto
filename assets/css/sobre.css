@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: "Rubik", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;    
+}
+body{
+    height: 100%;
+    background-image: url(/assets/images/FlappyBack.svg);
+    background-position: bottom;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: black;
+}
+h1{
+    text-align: center;
+    margin: 5% 0;
+}
+.container-imagens{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    column-gap: 40%
+}
+.box-img{
+    width: 200px;
+    height: 300px;
+    margin-bottom: 2%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: black;
+    border: 1.5px solid #333;
+    border-radius: 20px;
+    img{
+        width: 180px;
+        height: 250px;
+        border-radius: 10px;
+        margin-bottom: 2%;
+    }
+    h3{
+        background: #000;
+        color: #fff;
+        width: 80%;
+        text-align: center;
+        font-size: 16px;
+    }
+}
+@media screen and (max-width: 800px) {
+    .container-imagens{
+        flex-direction: column;     
+        row-gap: 20px;   
+    }
+}
