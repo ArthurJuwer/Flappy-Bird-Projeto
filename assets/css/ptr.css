@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: "Rubik", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url('../images/FlappyBack.svg'); /* Fundo do jogo */
+    background-size: cover;
+    background-position: center;
+}
+
+.game-container {
+    max-width: 580px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+}
+
+.background-blur {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.game-logo {
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 20px;
+}
+
+.ptrBtn {
+    background-color: black;
+    color: white;
+    border-radius: 50px;
+    height: 60px;
+    width: 160px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 35px;
+    text-decoration: none;
+    margin: auto;
+    margin-bottom: 30px;
+}
+
+.game-description {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.ptrs {
+    margin-bottom: 20px;
+}
+
+.title {
+    font-size: 20px;
+    color: black;
+    margin-bottom: 10px;
+}
+
+.ptrImg {
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 10px;
+}
