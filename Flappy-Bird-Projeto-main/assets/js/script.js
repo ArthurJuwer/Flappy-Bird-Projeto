@@ -54,7 +54,6 @@ function MySprite(img_url) {
   this.angle = 0;
   this.flipV = false;
   this.flipH = false;
-  this.finish = false;
 }
 MySprite.prototype.Do_Frame_Things = function () {
   ctx.save();
@@ -162,15 +161,8 @@ function show_the_power_ups() {
 }
 
 function check_for_end_game() {
-  for (var i = 0; i < pipes.length; i++) {
-    if (ImagesTouching(bird, pipes[i])) {
-      if(pipes[i].finish) {
-        game_mode = 'finish'
-      } else {
-        game_mode = 'over';
-      }
-    }
-  }
+  for (var i = 0; i < pipes.length; i++)
+    if (ImagesTouching(bird, pipes[i])) game_mode = 'over';
 }
 function display_intro_instructions() {
   if (logoLoaded) {
@@ -209,44 +201,6 @@ function display_game_over() {
 
   ctx.font = '25px Rubik';
   ctx.fillText('Suas Informações:', modalX + modalWidth / 2, modalY + 35);
-  ctx.font = '15px Rubik';
-  ctx.fillText('Cidade: ' + cidades[cidadeAtual], modalX + modalWidth / 2, modalY + 70);
-  ctx.fillText('Frutas Coletadas: ' + score, modalX + modalWidth / 2, modalY + 100);
-  ctx.fillText('Tempo Total: ' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds, modalX + modalWidth / 2, modalY + 130);
-
-  ctx.font = '20px Rubik';
-  ctx.fillText('Clique na tela para reiniciar', myCanvas.width / 2, modalY + modalHeight + 40);
-}
-
-
-function display_game_finish() {
-  const modalWidth = 260;
-  const modalHeight = 175;
-  const modalX = (myCanvas.width - modalWidth) / 2;
-  const modalY = (myCanvas.height - modalHeight) / 2;
-
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-  ctx.fillRect(0, 0, myCanvas.width, myCanvas.height);
-
-  ctx.fillStyle = 'rgb(166, 90, 0)';
-  ctx.beginPath();
-  ctx.moveTo(modalX + 30, modalY);
-  ctx.lineTo(modalX + modalWidth - 30, modalY);
-  ctx.quadraticCurveTo(modalX + modalWidth, modalY, modalX + modalWidth, modalY + 30);
-  ctx.lineTo(modalX + modalWidth, modalY + modalHeight - 30);
-  ctx.quadraticCurveTo(modalX + modalWidth, modalY + modalHeight, modalX + modalWidth - 30, modalY + modalHeight);
-  ctx.lineTo(modalX + 30, modalY + modalHeight);
-  ctx.quadraticCurveTo(modalX, modalY + modalHeight, modalX, modalY + modalHeight - 30);
-  ctx.lineTo(modalX, modalY + 30);
-  ctx.quadraticCurveTo(modalX, modalY, modalX + 30, modalY);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle = 'white';
-  ctx.textAlign = 'center';
-
-  ctx.font = '25px Rubik';
-  ctx.fillText('Parabéns!', modalX + modalWidth / 2, modalY + 35);
   ctx.font = '15px Rubik';
   ctx.fillText('Cidade: ' + cidades[cidadeAtual], modalX + modalWidth / 2, modalY + 70);
   ctx.fillText('Frutas Coletadas: ' + score, modalX + modalWidth / 2, modalY + 100);
@@ -309,10 +263,59 @@ function add_all_my_pipes() {
   add_pipe(6240, 250, gap_width);
   add_pipe(6400, 80, gap_width);
   var finish_line = new MySprite('http://s2js.com/img/etc/flappyend.png');
+
+  
   finish_line.x = 6700;
   finish_line.velocity_x = pipe_speed;
-  finish_line.finish = true;
   pipes.push(finish_line);
+}
+function end_game() {
+  const modalWidth = 300;
+  const modalHeight = 240;
+  const modalX = (myCanvas.width - modalWidth) / 2;
+  const modalY = (myCanvas.height - modalHeight) / 2;
+
+  // Fundo semi-transparente
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.fillRect(0, 0, myCanvas.width, myCanvas.height);
+
+  // Caixa de mensagem
+  ctx.fillStyle = 'black';
+  ctx.beginPath();
+  ctx.moveTo(modalX + 30, modalY);
+  ctx.lineTo(modalX + modalWidth - 30, modalY);
+  ctx.quadraticCurveTo(modalX + modalWidth, modalY, modalX + modalWidth, modalY + 30);
+  ctx.lineTo(modalX + modalWidth, modalY + modalHeight - 30);
+  ctx.quadraticCurveTo(modalX + modalWidth, modalY + modalHeight, modalX + modalWidth - 30, modalY + modalHeight);
+  ctx.lineTo(modalX + 30, modalY + modalHeight);
+  ctx.quadraticCurveTo(modalX, modalY + modalHeight, modalX, modalY + modalHeight - 30);
+  ctx.lineTo(modalX, modalY + 30);
+  ctx.quadraticCurveTo(modalX, modalY, modalX + 30, modalY);
+  ctx.closePath();
+  ctx.fill();
+
+  // Texto na caixa de mensagem
+  ctx.fillStyle = 'white';
+  ctx.textAlign = 'center';
+
+  ctx.font = '25px Rubik';
+  ctx.fillText('Parabéns, você chegou ao final!', modalX + modalWidth / 2, modalY + 35);
+
+  ctx.font = '15px Rubik';
+  ctx.fillText('Cidade: ' + cidades[cidadeAtual], modalX + modalWidth / 2, modalY + 80);
+  ctx.fillText('Frutas Coletadas: ' + score, modalX + modalWidth / 2, modalY + 110);
+  ctx.fillText('Tempo Total: ' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds, modalX + modalWidth / 2, modalY + 140);
+
+  ctx.font = '20px Rubik';
+  ctx.fillText('Clique na tela para reiniciar', myCanvas.width / 2, modalY + modalHeight + 50);
+}
+
+// Suponha que você tenha um código que verifica se o jogador chegou ao final
+// Exemplo hipotético:
+function verificarChegadaAoFinal() {
+  if (bird.x > finish_line.x) {
+    end_game();  // Chamada da função end_game quando o jogador chega ao final
+  }
 }
 
 function add_power_up(x_pos, y_pos, city) {  
@@ -489,12 +492,6 @@ function Do_a_Frame() {
     case 'over': {
       make_bird_slow_and_fall();
       display_game_over();
-      ingame = false;
-      break;
-    }
-    
-    case 'finish': {
-      display_game_finish();
       ingame = false;
       break;
     }
