@@ -203,7 +203,7 @@ function display_game_over() {
   ctx.fillText('Suas Informações:', modalX + modalWidth / 2, modalY + 35);
   ctx.font = '15px Rubik';
   ctx.fillText('Cidade: ' + cidades[cidadeAtual], modalX + modalWidth / 2, modalY + 70);
-  ctx.fillText('Frutas Coletadas: ' + score, modalX + modalWidth / 2, modalY + 100);
+  ctx.fillText('Itens Coletados: ' + score, modalX + modalWidth / 2, modalY + 100);
   ctx.fillText('Tempo Total: ' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds, modalX + modalWidth / 2, modalY + 130);
 
   ctx.font = '20px Rubik';
@@ -395,7 +395,7 @@ ctx.drawImage(plate, 0, 0);
   var timeText = 'Tempo: ' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
   ctx.fillText(timeText, posXText, posY + 40);
 
-  ctx.fillText('Frutas: ' + score, posXText, posY + 60);
+  ctx.fillText('Itens: ' + score, posXText, posY + 60);
   
   ctx.fillText(cidades[cidadeAtual], posXText, posY + 80);
 }
