@@ -355,7 +355,7 @@ function add_all_power_up() {
   add_power_up_in_middle(4334, 210, gap_width, 8);
   add_power_up_in_middle(4684, 110, gap_width, 9);
   add_power_up_in_middle(4884, 60, gap_width, 9);
-  add_power_up_in_middle(5094, 110, gap_width, 10);
+  add_power_up_in_middle(5094, 110, gap_width, 10); 
   add_power_up_in_middle(5264, 160, gap_width, 10);
   add_power_up_in_middle(5384, 160, gap_width, 11);
   add_power_up_in_middle(5674, 20, gap_width, 11);
