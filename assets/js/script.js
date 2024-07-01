@@ -248,12 +248,10 @@ function display_game_finish() {
   ctx.font = '25px Rubik';
   ctx.fillText('Parabéns!', modalX + modalWidth / 2, modalY + 35);
   ctx.font = '15px Rubik';
-  ctx.fillText('Cidade: ' + cidades[cidadeAtual], modalX + modalWidth / 2, modalY + 70);
+  ctx.fillText('Você completou a rota romântica!', modalX + modalWidth / 2, modalY + 70);
   ctx.fillText('Frutas Coletadas: ' + score, modalX + modalWidth / 2, modalY + 100);
   ctx.fillText('Tempo Total: ' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds, modalX + modalWidth / 2, modalY + 130);
 
-  ctx.font = '20px Rubik';
-  ctx.fillText('Clique na tela para reiniciar', myCanvas.width / 2, modalY + modalHeight + 40);
 }
 
 function display_bar_running_along_bottom() {
