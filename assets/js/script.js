@@ -38,7 +38,7 @@ const cidades = [
 var cidadeAtual = 0;
 var logoLoaded = false;
 var imgLogo = new Image();
-imgLogo.src = '../assets/images/FlappyLogo.png';
+imgLogo.src = './assets/images/FlappyLogo.png';
 imgLogo.onload = function() {
   logoLoaded = true;
 };
@@ -317,55 +317,55 @@ function add_power_up(x_pos, y_pos, city) {
   var power_up 
   switch (city) {
       case 1:
-          power_up = new MySprite('../assets/images/powerups/FlappyTrain.png');
+          power_up = new MySprite('./assets/images/powerups/FlappyTrain.png');
           divpowerup++          
           break;
         case 2:
-          power_up = new MySprite('../assets/images/powerups/FlappyShoes.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyShoes.png')          
           divpowerup++          
           break
         case 3:
-          power_up = new MySprite('../assets/images/powerups/FlappyChopp.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyChopp.png')          
           divpowerup++          
           break
         case 4:
-          power_up = new MySprite('../assets/images/powerups/FlappyCoffe.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyCoffe.png')          
           divpowerup++          
           break
         case 5:
-          power_up = new MySprite('../assets/images/powerups/FlappyTShirt.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyTShirt.png')          
           divpowerup++          
           break
         case 6:
-          power_up = new MySprite('../assets/images/powerups/FlappyCheese.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyCheese.png')          
           divpowerup++          
           break
         case 7:
-          power_up = new MySprite('../assets/images/powerups/FlappyChopp.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyChopp.png')          
           divpowerup++          
           break
         case 8:
-          power_up = new MySprite('../assets/images/powerups/FlappyHoney.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyHoney.png')          
           divpowerup++          
           break
         case 9:
-          power_up = new MySprite('../assets/images/powerups/FlappyCheese.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyCheese.png')          
           divpowerup++          
           break
         case 10:
-          power_up = new MySprite('../assets/images/powerups/FlappyCoffe.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyCoffe.png')          
           divpowerup++          
           break
         case 11:
-          power_up = new MySprite('../assets/images/powerups/FlappyGrappe.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyGrappe.png')          
           divpowerup++          
           break
         case 12:
-          power_up = new MySprite('../assets/images/powerups/FlappyChocolate.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyChocolate.png')          
           divpowerup++          
           break
         case 13:
-          power_up = new MySprite('../assets/images/powerups/FlappyIce.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyIce.png')          
           divpowerup++          
           break
       }
@@ -428,7 +428,7 @@ function drawMenu() {
   const posY = 10;
 
 var plate = new Image();
-plate.src = '../assets/images/FlappyPlate.png';
+plate.src = './assets/images/FlappyPlate.png';
 ctx.drawImage(plate, 0, 0);  
 
 
@@ -460,7 +460,7 @@ function increment_time() {
 
 var pipe_piece = new Image();
 pipe_piece.onload = add_all_my_pipes;
-pipe_piece.src = '../assets/images/FlappyPipe.png';
+pipe_piece.src = './assets/images/FlappyPipe.png';
 
 function Do_a_Frame() {
   ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
@@ -499,9 +499,9 @@ function Do_a_Frame() {
   }
 }
 var bottom_bar = new Image();
-bottom_bar.src = '../assets/images/flappybottom.png'; 
+bottom_bar.src = './assets/images/flappybottom.png'; 
 
-var bird = new MySprite('../assets/images/FlappyBird.png'); 
+var bird = new MySprite('./assets/images/FlappyBird.png'); 
 bird.x = myCanvas.width / 2.4;
 bird.y = myCanvas.height / 2;
 
