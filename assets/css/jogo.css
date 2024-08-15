@@ -1,31 +1,29 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
-
+@font-face {
+    font-family: '04b_19';
+    src: url('./assets/fonts/04B_19__.TTF') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
 * {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
-    font-family: "Rubik", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;    
 }
-
 body {
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    font-family: '04b_19', sans-serif;
 }
-
 canvas#myCanvas {
     background-image: url(../images/FlappyBack.svg);
     background-size: contain;
     height: 100%;
 }
-
-
 @media screen and (max-width: 800px) {
     body{
+        height: 100%;
         background: #000;
     }
     canvas#myCanvas {

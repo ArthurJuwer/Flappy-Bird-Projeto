@@ -1,47 +1,42 @@
-var ctx = myCanvas.getContext('2d');
-var FPS = 40;
-var jump_amount = -10;
-var max_fall_speed = +10;
-var acceleration = 1;
-var pipe_speed = -2;
-var game_mode = 'prestart';
-var time_game_last_running;
-var bottom_bar_offset = 0;
-var pipes = [];
-var divpowerup = 0
-var power_ups = [];
-var number_mission = 2;
-var audioInitialized = false;
-var audio = document.getElementById('myAudio');
+const ctx = myCanvas.getContext('2d');
+const FPS = 40;
+const jump_amount = -10;
+const max_fall_speed = +10;
+const acceleration = 1;
+const pipe_speed = -2;
+const audio = document.getElementById('myAudio');
+
+let game_mode = 'prestart';
+let time_game_last_running;
+let bottom_bar_offset = 0;
+let pipes = [];
+let divpowerup = 0
+let power_ups = [];
+let number_mission = 2;
+let audioInitialized = false;
+
 audio.volume = '0.1'
 
-var score = 0;
-var seconds = 0;
-var minutes = 0;
-var ingame = false;
+let score = 0;
+let seconds = 0;
+let minutes = 0;
+let ingame = false;
 const cidades = [
-  "São Leopoldo",
-  "Novo Hamburgo",
-  "Estância Velha",
-  "Ivoti",
-  "Dois Irmãos",
-  "Morro Reuter",
-  "Santa Maria do H",
-  "Presid. Lucena",
-  "Linha Nova",
-  "Picada Café",
-  "Nova Petrópolis",
-  "Gramado",
-  "Canela",
-  "São Chico de P"
+  "Sao Leopoldo", "Novo Hamburgo", "Estancia Velha", "Ivoti",
+  "Dois Irmaos", "Morro Reuter", "Santa Maria do H", "Presid. Lucena",
+  "Linha Nova", "Picada Cafe", "Nova Petropolis", "Gramado",
+  "Canela", "São Chico de P"
 ];
-var cidadeAtual = 0;
-var logoLoaded = false;
-var imgLogo = new Image();
-imgLogo.src = './assets/images/FlappyLogo.png';
+let cidadeAtual = 0;
+let logoLoaded = false;
+let imgLogo = new Image();
+imgLogo.src = './assets/images/FlappyLogo.webp';
 imgLogo.onload = function() {
   logoLoaded = true;
 };
+let pipe_piece = new Image();
+pipe_piece.onload = add_all_my_pipes;
+pipe_piece.src = './assets/images/FlappyPipe.webp';
 
 function MySprite(img_url) {
   this.x = 0;
@@ -70,7 +65,7 @@ MySprite.prototype.Do_Frame_Things = function () {
 };
 function ImagesTouching(thing1, thing2) {
   if (!thing1.visible || !thing2.visible) return false;
-  var padding = 10; 
+  let padding = 10; 
   if (
     thing1.x + padding >= thing2.x + thing2.MyImg.width ||
     thing1.x + thing1.MyImg.width - padding <= thing2.x
@@ -128,13 +123,13 @@ function make_bird_slow_and_fall() {
 }
 
 function add_pipe(x_pos, top_of_gap, gap_width) {
-  var top_pipe = new MySprite();
+  let top_pipe = new MySprite();
   top_pipe.MyImg = pipe_piece;
   top_pipe.x = x_pos;
   top_pipe.y = top_of_gap - pipe_piece.height;
   top_pipe.velocity_x = pipe_speed;
   pipes.push(top_pipe);
-  var bottom_pipe = new MySprite();
+  let bottom_pipe = new MySprite();
   bottom_pipe.MyImg = pipe_piece;
   bottom_pipe.flipV = true;
   bottom_pipe.x = x_pos;
@@ -150,19 +145,19 @@ function make_bird_tilt_appropriately() {
   }
 }
 function show_the_pipes() {
-  for (var i = 0; i < pipes.length; i++) {
+  for (let i = 0; i < pipes.length; i++) {
     pipes[i].Do_Frame_Things();
   }
 }
 
 function show_the_power_ups() {
-  for (var i = 0; i < power_ups.length; i++) {
+  for (let i = 0; i < power_ups.length; i++) {
     power_ups[i].Do_Frame_Things();
   }
 }
 
 function check_for_end_game() {
-  for (var i = 0; i < pipes.length; i++) {
+  for (let i = 0; i < pipes.length; i++) {
     if (ImagesTouching(bird, pipes[i])) {
       if(pipes[i].finish) {
         game_mode = 'finish'
@@ -176,47 +171,93 @@ function display_intro_instructions() {
   if (logoLoaded) {
     ctx.drawImage(imgLogo, 12.5, 45, 300, 120);
   }
-  ctx.font = '18px Rubik';
+  ctx.font = '18px "04b_19"';
   ctx.textAlign = 'center';
+  ctx.fillStyle = 'black';
   ctx.fillText('Clique na tela para iniciar', myCanvas.width / 2, 350);
 }
 
 function display_game_over() {
-  const modalWidth = 260;
-  const modalHeight = 175;
+  const modalWidth = 250; // Largura reduzida do modal
+  const modalHeight = 120; // Altura reduzida do modal
   const modalX = (myCanvas.width - modalWidth) / 2;
   const modalY = (myCanvas.height - modalHeight) / 2;
+  const borderColor = '#523747'; // Cor da borda do modal
 
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  // Fundo escuro semi-transparente
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
   ctx.fillRect(0, 0, myCanvas.width, myCanvas.height);
 
-  ctx.fillStyle = 'black';
-  ctx.beginPath();
-  ctx.moveTo(modalX + 30, modalY);
-  ctx.lineTo(modalX + modalWidth - 30, modalY);
-  ctx.quadraticCurveTo(modalX + modalWidth, modalY, modalX + modalWidth, modalY + 30);
-  ctx.lineTo(modalX + modalWidth, modalY + modalHeight - 30);
-  ctx.quadraticCurveTo(modalX + modalWidth, modalY + modalHeight, modalX + modalWidth - 30, modalY + modalHeight);
-  ctx.lineTo(modalX + 30, modalY + modalHeight);
-  ctx.quadraticCurveTo(modalX, modalY + modalHeight, modalX, modalY + modalHeight - 30);
-  ctx.lineTo(modalX, modalY + 30);
-  ctx.quadraticCurveTo(modalX, modalY, modalX + 30, modalY);
-  ctx.closePath();
-  ctx.fill();
+  // Adiciona o texto "Game Over" acima do modal
+  ctx.textAlign = 'center';
+  ctx.font = '40px "04b_19"'; // Fonte maior para "Game Over"
 
-  ctx.fillStyle = 'white';
+  ctx.strokeStyle = 'rgb(234, 253, 219)'; // Cor da borda branca
+  ctx.lineWidth = 12; // Largura da borda branca
+  ctx.strokeText('Game Over', myCanvas.width / 2, modalY - 20);
+
+
+  // Adiciona borda preta ao texto "Game Over"
+  ctx.strokeStyle = 'rgb(82, 55, 71)'; // Cor da borda preta
+  ctx.lineWidth = 6; // Largura da borda preta
+  ctx.strokeText('Game Over', myCanvas.width / 2, modalY - 20); // Desenha a borda preta
+
+  ctx.fillStyle = 'rgb(245, 186, 24)'; // Cor do texto
+  ctx.fillText('Game Over', myCanvas.width / 2, modalY - 20); // Desenha o texto
+
+  // Modal com fundo sólido
+
+  ctx.fillStyle = 'rgb(219, 218, 150)'; // Cor de fundo do modal
+  ctx.fillRect(modalX, modalY, modalWidth, modalHeight);
+
+  
+  // Adiciona borda ao modal
+  ctx.strokeStyle = borderColor; // Cor da borda
+  ctx.lineWidth = 4; // Largura da borda
+  ctx.strokeRect(modalX, modalY, modalWidth, modalHeight); // Desenha a borda
+
+
+
+  // Adiciona detalhes dentro do modal
+  ctx.fillStyle = 'rgb(210, 170, 79)'; // Cor do texto
   ctx.textAlign = 'center';
 
-  ctx.font = '25px Rubik';
-  ctx.fillText('Suas Informações:', modalX + modalWidth / 2, modalY + 35);
-  ctx.font = '15px Rubik';
-  ctx.fillText('Cidade: ' + cidades[cidadeAtual], modalX + modalWidth / 2, modalY + 70);
-  ctx.fillText('Itens Coletados: ' + score, modalX + modalWidth / 2, modalY + 100);
-  ctx.fillText('Tempo Total: ' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds, modalX + modalWidth / 2, modalY + 130);
+  ctx.font = '20px "04b_19"'; // Fonte para detalhes
 
-  ctx.font = '20px Rubik';
+  ctx.strokeStyle = 'rgb(0, 0, 0)'; // Cor da borda preta
+  ctx.lineWidth = 3; // Largura da borda preta
+  ctx.lineJoin = 'miter'; // Borda arredondada
+  ctx.strokeText('Cidade: ' + cidades[cidadeAtual], modalX + modalWidth / 2, modalY + 40);
+  ctx.strokeText('Itens Coletados: ' + score, modalX + modalWidth / 2, modalY + 70);
+  ctx.strokeText('Tempo Total: ' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds, modalX + modalWidth / 2, modalY + 100);
+
+  // Desenha o texto com a cor de preenchimento
+  ctx.fillStyle = 'rgb(234, 253, 219))'; // Cor do texto
+  ctx.fillText('Cidade: ' + cidades[cidadeAtual], modalX + modalWidth / 2, modalY + 40);
+  ctx.fillText('Itens Coletados: ' + score, modalX + modalWidth / 2, modalY + 70);
+  ctx.fillText('Tempo Total: ' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds, modalX + modalWidth / 2, modalY + 100);
+
+  // Adiciona o texto para reiniciar
+  ctx.font = '20px "04b_19"'; // Fonte para reiniciar
+
+    // Adiciona borda preta ao texto para reiniciar
+    ctx.strokeStyle = 'rgb(219, 218, 150)'; // Cor da borda preta
+    ctx.lineWidth = 8; // Largura da borda preta
+    ctx.strokeText('Clique na tela para reiniciar', myCanvas.width / 2, modalY + modalHeight + 40);
+    
+
+
+  // Adiciona borda preta ao texto para reiniciar
+  ctx.strokeStyle = 'rgb(82, 55, 71)'; // Cor da borda preta
+  ctx.lineWidth = 4; // Largura da borda preta
+  ctx.strokeText('Clique na tela para reiniciar', myCanvas.width / 2, modalY + modalHeight + 40);
+  
+  ctx.fillStyle = 'rgb(245, 186, 24)'; // Cor do texto
   ctx.fillText('Clique na tela para reiniciar', myCanvas.width / 2, modalY + modalHeight + 40);
 }
+
+
+
 
 
 function display_game_finish() {
@@ -245,14 +286,14 @@ function display_game_finish() {
   ctx.fillStyle = 'white';
   ctx.textAlign = 'center';
 
-  ctx.font = '25px Rubik';
+  ctx.font = '25px "04b_19"';
   ctx.fillText('Parabéns!', modalX + modalWidth / 2, modalY + 35);
-  ctx.font = '15px Rubik';
+  ctx.font = '15px "04b_19"';
   ctx.fillText('Você completou a rota romântica!', modalX + modalWidth / 2, modalY + 70);
   ctx.fillText('Frutas Coletadas: ' + score, modalX + modalWidth / 2, modalY + 100);
   ctx.fillText('Tempo Total: ' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds, modalX + modalWidth / 2, modalY + 130);
-
 }
+
 
 function display_bar_running_along_bottom() {
   if (bottom_bar_offset < -23) bottom_bar_offset = 0;
@@ -279,7 +320,7 @@ function reset_game() {
 }
 
 function add_all_my_pipes() {
-  var gap_width = 180; 
+  let gap_width = 180; 
   add_pipe(500, 100, gap_width);
   add_pipe(800, 50, gap_width);
   add_pipe(1000, 250, gap_width);
@@ -306,7 +347,7 @@ function add_all_my_pipes() {
   add_pipe(6100, 140, gap_width);
   add_pipe(6240, 250, gap_width);
   add_pipe(6400, 80, gap_width);
-  var finish_line = new MySprite('http://s2js.com/img/etc/flappyend.png');
+  let finish_line = new MySprite('http://s2js.com/img/etc/flappyend.png');
   finish_line.x = 6700;
   finish_line.velocity_x = pipe_speed;
   finish_line.finish = true;
@@ -314,58 +355,58 @@ function add_all_my_pipes() {
 }
 
 function add_power_up(x_pos, y_pos, city) {  
-  var power_up 
+  let power_up 
   switch (city) {
       case 1:
-          power_up = new MySprite('./assets/images/powerups/FlappyTrain.png');
+          power_up = new MySprite('./assets/images/powerups/FlappyTrain.webp');
           divpowerup++          
           break;
         case 2:
-          power_up = new MySprite('./assets/images/powerups/FlappyShoes.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyShoes.webp')          
           divpowerup++          
           break
         case 3:
-          power_up = new MySprite('./assets/images/powerups/FlappyChopp.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyChopp.webp')          
           divpowerup++          
           break
         case 4:
-          power_up = new MySprite('./assets/images/powerups/FlappyCoffe.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyCoffe.webp')          
           divpowerup++          
           break
         case 5:
-          power_up = new MySprite('./assets/images/powerups/FlappyTShirt.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyTShirt.webp')          
           divpowerup++          
           break
         case 6:
-          power_up = new MySprite('./assets/images/powerups/FlappyCheese.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyCheese.webp')          
           divpowerup++          
           break
         case 7:
-          power_up = new MySprite('./assets/images/powerups/FlappyChopp.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyChopp.webp')          
           divpowerup++          
           break
         case 8:
-          power_up = new MySprite('./assets/images/powerups/FlappyHoney.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyHoney.webp')          
           divpowerup++          
           break
         case 9:
-          power_up = new MySprite('./assets/images/powerups/FlappyCheese.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyCheese.webp')          
           divpowerup++          
           break
         case 10:
-          power_up = new MySprite('./assets/images/powerups/FlappyCoffe.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyCoffe.webp')          
           divpowerup++          
           break
         case 11:
-          power_up = new MySprite('./assets/images/powerups/FlappyGrappe.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyGrappe.webp')          
           divpowerup++          
           break
         case 12:
-          power_up = new MySprite('./assets/images/powerups/FlappyChocolate.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyChocolate.webp')          
           divpowerup++          
           break
         case 13:
-          power_up = new MySprite('./assets/images/powerups/FlappyIce.png')          
+          power_up = new MySprite('./assets/images/powerups/FlappyIce.webp')          
           divpowerup++          
           break
       }
@@ -377,11 +418,11 @@ function add_power_up(x_pos, y_pos, city) {
     }
 
 function add_power_up_in_middle(x_pos, top_of_gap, gap_width, city) {
-  var middle_y = top_of_gap + (gap_width / 2);
+  let middle_y = top_of_gap + (gap_width / 2);
   add_power_up(x_pos, middle_y, city);
 }
 function add_all_power_up() {
-  var gap_width = 180; 
+  let gap_width = 180; 
   add_power_up_in_middle(500, 60, gap_width, 1);
   add_power_up_in_middle(800, 10, gap_width, 1);
   add_power_up_in_middle(1000, 230, gap_width, 2);
@@ -412,7 +453,7 @@ function add_all_power_up() {
 }
 
 function check_for_power_up() {
-  for (var i = 0; i < power_ups.length; i++) {
+  for (let i = 0; i < power_ups.length; i++) {
     if (ImagesTouching(bird, power_ups[i])) {
       power_ups[i].visible = false; 
       score += 1;
@@ -427,26 +468,23 @@ function check_for_power_up() {
 function drawMenu() {
   const posY = 10;
 
-var plate = new Image();
-plate.src = './assets/images/FlappyPlate.png';
+let plate = new Image();
+plate.src = './assets/images/FlappyPlate.webp';
 ctx.drawImage(plate, 0, 0);  
 
 
   ctx.textAlign = 'left';
   let posXText = 28;
-  ctx.font = '12px Rubik';
+  ctx.font = '12px "04b_19"';
   ctx.fillStyle = 'white';
 
-  var timeText = 'Tempo: ' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+  let timeText = 'Tempo: ' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
   ctx.fillText(timeText, posXText, posY + 40);
 
   ctx.fillText('Itens: ' + score, posXText, posY + 60);
   
   ctx.fillText(cidades[cidadeAtual], posXText, posY + 80);
 }
-
-
-
 
 function increment_time() {
   if (ingame == true) {
@@ -457,10 +495,6 @@ function increment_time() {
     }
   }
 }
-
-var pipe_piece = new Image();
-pipe_piece.onload = add_all_my_pipes;
-pipe_piece.src = './assets/images/FlappyPipe.png';
 
 function Do_a_Frame() {
   ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
@@ -498,10 +532,10 @@ function Do_a_Frame() {
     }
   }
 }
-var bottom_bar = new Image();
-bottom_bar.src = './assets/images/flappybottom.png'; 
+let bottom_bar = new Image();
+bottom_bar.src = './assets/images/flappybottom.webp'; 
 
-var bird = new MySprite('./assets/images/FlappyBird.png'); 
+let bird = new MySprite('./assets/images/FlappyBird.webp'); 
 bird.x = myCanvas.width / 2.4;
 bird.y = myCanvas.height / 2;
 
@@ -518,8 +552,6 @@ function scrollToCenter() {
   // Bloqueia a rolagem
   document.body.style.overflow = 'hidden';
 }
-
-
 add_all_power_up();
 setInterval(increment_time, 1000);
 setInterval(Do_a_Frame, 1000 / FPS);

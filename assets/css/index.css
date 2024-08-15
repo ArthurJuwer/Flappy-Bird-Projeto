@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 
+:root {
+    font-size: 16px;
+}
+
 * {
     padding: 0;
     margin: 0;
@@ -15,13 +19,13 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-image: url('../images/FlappyBack.svg'); /* Fundo do jogo */
+    background-image: url('../images/FlappyBack.svg');
     background-size: cover;
     background-position: center;
 }
 
 .game-container {
-    max-width: 580px;
+    max-width: 36.25rem;
     width: 100%;
     text-align: center;
     position: relative;
@@ -29,49 +33,49 @@ body {
 
 .background-blur {
     background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(10px);
-    padding: 20px;
-    border-radius: 10px;
+    backdrop-filter: blur(0.625rem);
+    padding: 1.25rem;
+    border-radius: 0.625rem;
 }
 
 .game-logo {
     width: 100%;
-    max-width: 300px;
-    margin-bottom: 20px;
+    max-width: 18.75rem;
+    margin-bottom: 1.25rem;
 }
 
 .ptrBtn {
     background-color: black;
     color: white;
-    border-radius: 50px;
-    height: 60px;
-    width: 160px;
+    border-radius: 3.125rem;
+    height: 3.75rem;
+    width: 10rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 35px;
+    font-size: 2.1875rem;
     text-decoration: none;
     margin: auto;
-    margin-bottom: 30px;
+    margin-bottom: 1.875rem;
 }
 
 .game-description {
-    font-size: 16px;
-    margin-bottom: 20px;
+    font-size: 1rem;
+    margin-bottom: 1.25rem;
 }
 
 .ptrs {
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
 }
 
 .title {
-    font-size: 20px;
+    font-size: 1.25rem;
     color: black;
-    margin-bottom: 10px;
+    margin-bottom: 0.625rem;
 }
 
 .ptrImg {
     width: 100%;
-    max-width: 300px;
-    margin-bottom: 10px;
+    max-width: 18.75rem;
+    margin-bottom: 0.625rem;
 }
