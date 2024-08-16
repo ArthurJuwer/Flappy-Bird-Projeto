@@ -178,8 +178,68 @@ function display_intro_instructions() {
 }
 
 function display_game_over() {
-  const modalWidth = 250; // Largura reduzida do modal
-  const modalHeight = 120; // Altura reduzida do modal
+  const modalWidth = 250;
+  const modalHeight = 120;
+  const modalX = (myCanvas.width - modalWidth) / 2;
+  const modalY = (myCanvas.height - modalHeight) / 2;
+  const borderColor = '#523747';
+  
+  // Fundo escuro semi-transparente
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+  ctx.fillRect(0, 0, myCanvas.width, myCanvas.height);
+
+  // Configuração de estilo para o texto "Game Over"
+  const gameOverText = 'Game Over';
+  ctx.textAlign = 'center';
+  ctx.font = '40px "04b_19"';
+
+  // Adiciona bordas e preenche o texto "Game Over"
+  ctx.strokeStyle = 'rgb(234, 253, 219)';
+  ctx.lineWidth = 12;
+  ctx.strokeText(gameOverText, myCanvas.width / 2, modalY - 20);
+  ctx.strokeStyle = 'rgb(82, 55, 71)';
+  ctx.lineWidth = 8;
+  ctx.strokeText(gameOverText, myCanvas.width / 2, modalY - 20);
+  ctx.fillStyle = 'rgb(245, 186, 24)';
+  ctx.fillText(gameOverText, myCanvas.width / 2, modalY - 20);
+
+  // Modal
+  ctx.fillStyle = 'rgb(219, 218, 150)';
+  ctx.fillRect(modalX, modalY, modalWidth, modalHeight);
+  ctx.strokeStyle = borderColor;
+  ctx.lineWidth = 4;
+  ctx.strokeRect(modalX, modalY, modalWidth, modalHeight);
+
+  // Detalhes no modal
+  ctx.font = '20px "04b_19"';
+  ctx.fillStyle = 'rgb(234, 253, 219)';
+  const details = [
+    `Cidade: ${cidades[cidadeAtual]}`,
+    `Itens Coletados: ${score}`,
+    `Tempo Total: ${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
+  ];
+  
+  details.forEach((detail, index) => {
+    const yPosition = modalY + 40 + (index * 30);
+    ctx.strokeStyle = 'rgb(82, 55, 71)';
+    ctx.lineWidth = 3;
+    ctx.strokeText(detail, modalX + modalWidth / 2, yPosition);
+    ctx.fillText(detail, modalX + modalWidth / 2, yPosition);
+  });
+
+  // Texto para reiniciar
+  const restartText = 'Clique na tela para reiniciar';
+  ctx.strokeStyle = 'rgb(82, 55, 71)';
+  ctx.lineWidth = 4;
+  ctx.strokeText(restartText, myCanvas.width / 2, modalY + modalHeight + 40);
+  ctx.fillStyle = 'rgb(245, 186, 24)';
+  ctx.fillText(restartText, myCanvas.width / 2, modalY + modalHeight + 40);
+}
+
+
+function display_game_finish() {
+  const modalWidth = 250; // Largura do modal
+  const modalHeight = 150; // Altura do modal
   const modalX = (myCanvas.width - modalWidth) / 2;
   const modalY = (myCanvas.height - modalHeight) / 2;
   const borderColor = '#523747'; // Cor da borda do modal
@@ -188,111 +248,64 @@ function display_game_over() {
   ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
   ctx.fillRect(0, 0, myCanvas.width, myCanvas.height);
 
-  // Adiciona o texto "Game Over" acima do modal
+  // Adiciona o texto "Parabéns!" acima do modal
   ctx.textAlign = 'center';
-  ctx.font = '40px "04b_19"'; // Fonte maior para "Game Over"
-
+  ctx.font = '40px "04b_19"'; // Fonte maior para "Parabéns!"
+  
+  // Borda branca ao redor do texto "Parabéns!"
   ctx.strokeStyle = 'rgb(234, 253, 219)'; // Cor da borda branca
   ctx.lineWidth = 12; // Largura da borda branca
-  ctx.strokeText('Game Over', myCanvas.width / 2, modalY - 20);
+  ctx.strokeText('Parabens!', myCanvas.width / 2, modalY - 20);
 
+  // Borda secundária ao redor do texto "Parabéns!"
+  ctx.strokeStyle = 'rgb(82, 55, 71)'; // Cor da borda secundária
+  ctx.lineWidth = 6;
+  ctx.strokeText('Parabens!', myCanvas.width / 2, modalY - 20);
 
-  // Adiciona borda preta ao texto "Game Over"
-  ctx.strokeStyle = 'rgb(82, 55, 71)'; // Cor da borda preta
-  ctx.lineWidth = 6; // Largura da borda preta
-  ctx.strokeText('Game Over', myCanvas.width / 2, modalY - 20); // Desenha a borda preta
-
+  // Preenche o texto "Parabéns!"
   ctx.fillStyle = 'rgb(245, 186, 24)'; // Cor do texto
-  ctx.fillText('Game Over', myCanvas.width / 2, modalY - 20); // Desenha o texto
+  ctx.fillText('Parabens!', myCanvas.width / 2, modalY - 20);
 
   // Modal com fundo sólido
-
   ctx.fillStyle = 'rgb(219, 218, 150)'; // Cor de fundo do modal
   ctx.fillRect(modalX, modalY, modalWidth, modalHeight);
 
-  
-  // Adiciona borda ao modal
+  // Borda ao redor do modal
   ctx.strokeStyle = borderColor; // Cor da borda
-  ctx.lineWidth = 4; // Largura da borda
-  ctx.strokeRect(modalX, modalY, modalWidth, modalHeight); // Desenha a borda
-
-
+  ctx.lineWidth = 4;
+  ctx.strokeRect(modalX, modalY, modalWidth, modalHeight);
 
   // Adiciona detalhes dentro do modal
   ctx.fillStyle = 'rgb(210, 170, 79)'; // Cor do texto
   ctx.textAlign = 'center';
-
   ctx.font = '20px "04b_19"'; // Fonte para detalhes
 
+  // Informações sobre o progresso do jogador
   ctx.strokeStyle = 'rgb(0, 0, 0)'; // Cor da borda preta
-  ctx.lineWidth = 3; // Largura da borda preta
-  ctx.lineJoin = 'miter'; // Borda arredondada
+  ctx.lineWidth = 3; // Largura da borda
   ctx.strokeText('Cidade: ' + cidades[cidadeAtual], modalX + modalWidth / 2, modalY + 40);
-  ctx.strokeText('Itens Coletados: ' + score, modalX + modalWidth / 2, modalY + 70);
+  ctx.strokeText('Frutas Coletadas: ' + score, modalX + modalWidth / 2, modalY + 70);
   ctx.strokeText('Tempo Total: ' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds, modalX + modalWidth / 2, modalY + 100);
 
-  // Desenha o texto com a cor de preenchimento
-  ctx.fillStyle = 'rgb(234, 253, 219))'; // Cor do texto
+  // Preenche o texto com cor
+  ctx.fillStyle = 'rgb(234, 253, 219)'; // Cor do texto
   ctx.fillText('Cidade: ' + cidades[cidadeAtual], modalX + modalWidth / 2, modalY + 40);
-  ctx.fillText('Itens Coletados: ' + score, modalX + modalWidth / 2, modalY + 70);
+  ctx.fillText('Frutas Coletadas: ' + score, modalX + modalWidth / 2, modalY + 70);
   ctx.fillText('Tempo Total: ' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds, modalX + modalWidth / 2, modalY + 100);
 
   // Adiciona o texto para reiniciar
   ctx.font = '20px "04b_19"'; // Fonte para reiniciar
 
-    // Adiciona borda preta ao texto para reiniciar
-    ctx.strokeStyle = 'rgb(219, 218, 150)'; // Cor da borda preta
-    ctx.lineWidth = 8; // Largura da borda preta
-    ctx.strokeText('Clique na tela para reiniciar', myCanvas.width / 2, modalY + modalHeight + 40);
-    
-
-
-  // Adiciona borda preta ao texto para reiniciar
+  // Borda preta ao redor do texto "Reiniciar"
   ctx.strokeStyle = 'rgb(82, 55, 71)'; // Cor da borda preta
-  ctx.lineWidth = 4; // Largura da borda preta
+  ctx.lineWidth = 8; // Largura da borda preta
   ctx.strokeText('Clique na tela para reiniciar', myCanvas.width / 2, modalY + modalHeight + 40);
-  
+
+  // Preenche o texto "Reiniciar"
   ctx.fillStyle = 'rgb(245, 186, 24)'; // Cor do texto
   ctx.fillText('Clique na tela para reiniciar', myCanvas.width / 2, modalY + modalHeight + 40);
 }
 
-
-
-
-
-function display_game_finish() {
-  const modalWidth = 260;
-  const modalHeight = 175;
-  const modalX = (myCanvas.width - modalWidth) / 2;
-  const modalY = (myCanvas.height - modalHeight) / 2;
-
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-  ctx.fillRect(0, 0, myCanvas.width, myCanvas.height);
-
-  ctx.fillStyle = 'rgb(166, 90, 0)';
-  ctx.beginPath();
-  ctx.moveTo(modalX + 30, modalY);
-  ctx.lineTo(modalX + modalWidth - 30, modalY);
-  ctx.quadraticCurveTo(modalX + modalWidth, modalY, modalX + modalWidth, modalY + 30);
-  ctx.lineTo(modalX + modalWidth, modalY + modalHeight - 30);
-  ctx.quadraticCurveTo(modalX + modalWidth, modalY + modalHeight, modalX + modalWidth - 30, modalY + modalHeight);
-  ctx.lineTo(modalX + 30, modalY + modalHeight);
-  ctx.quadraticCurveTo(modalX, modalY + modalHeight, modalX, modalY + modalHeight - 30);
-  ctx.lineTo(modalX, modalY + 30);
-  ctx.quadraticCurveTo(modalX, modalY, modalX + 30, modalY);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle = 'white';
-  ctx.textAlign = 'center';
-
-  ctx.font = '25px "04b_19"';
-  ctx.fillText('Parabéns!', modalX + modalWidth / 2, modalY + 35);
-  ctx.font = '15px "04b_19"';
-  ctx.fillText('Você completou a rota romântica!', modalX + modalWidth / 2, modalY + 70);
-  ctx.fillText('Frutas Coletadas: ' + score, modalX + modalWidth / 2, modalY + 100);
-  ctx.fillText('Tempo Total: ' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds, modalX + modalWidth / 2, modalY + 130);
-}
 
 
 function display_bar_running_along_bottom() {
