@@ -1,62 +1,57 @@
   const ctx = myCanvas.getContext('2d');
   const FPS = 40;
-  const jump_amount = -10;
-  const max_fall_speed = +10;
-  const acceleration = 1;
-  const pipe_speed = -2;
+  const TAMANHO_SALTO = -10;
+  const VELOCIDADEQUEDA = +10;
+  const ACELERACAO = 1;
+  const VELOCIDADE_CANO = -2;
   const audio = document.getElementById('myAudio');
+  let modoAtual = 'prestart';
+  let horaUltimaPartida;
+  let deslocamentoBarraInferior = 0;
+  let canos = [];
+  let divItens = 0
+  let itens = [];
+  let numeroMissao = 2;
+  let audioInicializado = false;
+  let pontuacao = 0;
+  let segundos = 0;
+  let minutos = 0;
+  let emJogo = false;
 
-// REINICIAR JOGO NO FINAL DELE NAO ESTA FUNCIONANDO
-
-  let game_mode = 'prestart';
-  let time_game_last_running;
-  let bottom_bar_offset = 0;
-  let pipes = [];
-  let divpowerup = 0
-  let power_ups = [];
-  let number_mission = 2;
-  let audioInitialized = false;
-
-  audio.volume = '0.1'
-
-  let score = 0;
-  let seconds = 0;
-  let minutes = 0;
-  let ingame = false;
-  const cidades = [
+  const CIDADES = [
     "Sao Leopoldo", "Novo Hamburgo", "Estancia Velha", "Ivoti",
     "Dois Irmaos", "Morro Reuter", "Santa Maria do H", "Presid. Lucena",
     "Linha Nova", "Picada Cafe", "Nova Petropolis", "Gramado",
     "Canela", "São Chico de P"
   ];
-  const powerUpImages = [
-    './assets/images/powerups/FlappyTrain.webp',
-    './assets/images/powerups/FlappyShoes.webp',
-    './assets/images/powerups/FlappyChopp.webp',
-    './assets/images/powerups/FlappyCoffe.webp',
-    './assets/images/powerups/FlappyTShirt.webp',
-    './assets/images/powerups/FlappyCheese.webp',
-    './assets/images/powerups/FlappyChopp.webp',
-    './assets/images/powerups/FlappyHoney.webp',
-    './assets/images/powerups/FlappyCheese.webp',
-    './assets/images/powerups/FlappyCoffe.webp',
-    './assets/images/powerups/FlappyGrappe.webp',
-    './assets/images/powerups/FlappyChocolate.webp',
-    './assets/images/powerups/FlappyIce.webp'
+  const ITENS_IMAGENS = [
+    './assets/images/itens/FlappyTrain.webp',
+    './assets/images/itens/FlappyShoes.webp',
+    './assets/images/itens/FlappyChopp.webp',
+    './assets/images/itens/FlappyCoffe.webp',
+    './assets/images/itens/FlappyTShirt.webp',
+    './assets/images/itens/FlappyCheese.webp',
+    './assets/images/itens/FlappyChopp.webp',
+    './assets/images/itens/FlappyHoney.webp',
+    './assets/images/itens/FlappyCheese.webp',
+    './assets/images/itens/FlappyCoffe.webp',
+    './assets/images/itens/FlappyGrappe.webp',
+    './assets/images/itens/FlappyChocolate.webp',
+    './assets/images/itens/FlappyIce.webp'
   ];
-  let powerUpCollectCount = -1;
+  let itensColetado = -1;
   let cidadeAtual = 0;
-  let logoLoaded = false;
-  let imgLogo = new Image();
-  imgLogo.src = './assets/images/FlappyLogo.webp';
-  imgLogo.onload = function() {
-    logoLoaded = true;
+  let logoCarregada = false;
+  let imagemLogo = new Image();
+  imagemLogo.src = './assets/images/FlappyLogo.webp';
+  imagemLogo.onload = function() {
+    logoCarregada = true;
   };
-  let pipe_piece = new Image();
-  pipe_piece.onload = add_all_my_pipes;
-  pipe_piece.src = './assets/images/FlappyPipe.webp';
+  let pedacosCano = new Image();
+  pedacosCano.onload = adicionarCanos;
+  pedacosCano.src = './assets/images/FlappyPipe.webp';
 
-  function detectDevice() {
+  function pegarDispositivo() {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
 
     if (/android/i.test(userAgent)) {
@@ -66,17 +61,25 @@
     } else {
         return "PC";
     }
-  }
+}
 
-  const deviceType = detectDevice();
-  let canvasContent = document.getElementById("myCanvas");
-  if (deviceType === "PC") {
-    canvasContent.width = 1000;
-    canvasContent.height = 480;
-  } else {
-    canvasContent.width = 320;
-    canvasContent.height = 480;
-  }
+const DISPOSITIVO_USUARIO = pegarDispositivo();
+const conteudoCanvas = document.getElementById("myCanvas");
+
+if (DISPOSITIVO_USUARIO === "PC") {
+    conteudoCanvas.width = 1000;
+    conteudoCanvas.height = 480;
+    window.addEventListener('mousedown', AcaoJogador);
+    window.addEventListener('keydown', AcaoJogador);
+    window.addEventListener('touchstart', AcaoJogador);
+} else {
+    conteudoCanvas.width = 320;
+    conteudoCanvas.height = 480;
+    const botaoPularCelular = document.querySelector("#jumpButton");
+    if (botaoPularCelular) {
+        botaoPularCelular.addEventListener('click', AcaoJogador);
+    }
+}
   function MySprite(img_url) {
     this.x = 0;
     this.y = 0;
@@ -90,7 +93,7 @@
     this.flipH = false;
     this.finish = false;
   }
-  MySprite.prototype.Do_Frame_Things = function () {
+  MySprite.prototype.fazerAtualizacoes = function () {
     ctx.save();
     ctx.translate(this.x + this.MyImg.width / 2, this.y + this.MyImg.height / 2);
     ctx.rotate((this.angle * Math.PI) / 180);
@@ -102,7 +105,7 @@
     this.y = this.y + this.velocity_y;
     ctx.restore();
   };
-  function ImagesTouching(thing1, thing2) {
+  function tocarImagens(thing1, thing2) {
     if (!thing1.visible || !thing2.visible) return false;
     let padding = 10; 
     if (
@@ -117,115 +120,135 @@
       return false;
     return true;
   }
-  function Got_Player_Input(MyEvent) {
-    if (!audioInitialized) {
-      audio.play().then(function () {
-        audioInitialized = true;
-      }).catch(function (error) {
-        console.log('Falha ao iniciar o áudio:', error);
-      });
-    }
-
-    switch (game_mode) {
+  function AcaoJogador(MyEvent) {
+    switch (modoAtual) {
       case 'prestart': {
-        game_mode = 'running';
+        modoAtual = 'running';
         break;
       }
       case 'running': {
-        bird.velocity_y = jump_amount;
+        passaro.velocity_y = TAMANHO_SALTO;
         break;
       }
       case 'over':
-        if (new Date() - time_game_last_running > 1000) {
-          reset_game();
-          game_mode = 'running';
+        if (new Date() - horaUltimaPartida
+ > 1000) {
+          reiniciarJogo();
+          modoAtual = 'running';
+          break;
+      }
+      case 'finish':
+        if (new Date() - horaUltimaPartida
+ > 1000) {
+          reiniciarJogo();
+          modoAtual = 'running';
           break;
         }
     }
     MyEvent.preventDefault();
+    if (!audioInicializado) {
+      audio.play().then(function () {
+        audioInicializado = true;
+        audio.volume = '0.1'
+      }).catch(function (error) {
+        console.log('Falha ao iniciar o áudio:', error);
+      });
+    }
   }
-  addEventListener('touchstart', Got_Player_Input);
-  addEventListener('mousedown', Got_Player_Input);
-  addEventListener('keydown', Got_Player_Input);
-  function make_bird_slow_and_fall() {
-    if (bird.velocity_y < max_fall_speed) {
-      bird.velocity_y = bird.velocity_y + acceleration;
+  
+  const botaoPularCelular = document.querySelector("#jumpButton");
+  
+  botaoPularCelular.addEventListener('click', AcaoJogador);
+
+  function fazerPassaroCairLento() {
+    if (passaro.velocity_y < VELOCIDADEQUEDA) {
+      passaro.velocity_y = passaro.velocity_y + ACELERACAO;
     }
-    if (bird.y > myCanvas.height - bird.MyImg.height) {
-      bird.velocity_y = 0;
-      game_mode = 'over';
+    if (passaro.y > myCanvas.height - passaro.MyImg.height) {
+      passaro.velocity_y = 0;
+      modoAtual = 'over';
     }
-    if (bird.y < 0 - bird.MyImg.height) {
-      bird.velocity_y = 0;
-      game_mode = 'over';
+    if (passaro.y < 0 - passaro.MyImg.height) {
+      passaro.velocity_y = 0;
+      modoAtual = 'over';
     }
   }
 
-  function add_pipe(x_pos, top_of_gap, gap_width, city) {
-    let top_pipe = new MySprite();
-    top_pipe.MyImg = pipe_piece;
-    top_pipe.x = x_pos;
-    top_pipe.y = top_of_gap - pipe_piece.height;
-    top_pipe.velocity_x = pipe_speed;
-    pipes.push(top_pipe);
+  function adicionarCano(x_pos, top_of_gap, gap_width, city) {
+    let canoSuperior = new MySprite();
+    canoSuperior.MyImg = pedacosCano;
+    canoSuperior.x = x_pos;
+    canoSuperior.y = top_of_gap - pedacosCano.height;
+    canoSuperior.velocity_x = VELOCIDADE_CANO;
+    canos.push(canoSuperior);
   
-    let bottom_pipe = new MySprite();
-    bottom_pipe.MyImg = pipe_piece;
-    bottom_pipe.flipV = true;
-    bottom_pipe.x = x_pos;
-    bottom_pipe.y = top_of_gap + gap_width;
-    bottom_pipe.velocity_x = pipe_speed;
-    pipes.push(bottom_pipe);
+    let canoInferior = new MySprite();
+    canoInferior.MyImg = pedacosCano;
+    canoInferior.flipV = true;
+    canoInferior.x = x_pos;
+    canoInferior.y = top_of_gap + gap_width;
+    canoInferior.velocity_x = VELOCIDADE_CANO;
+    canos.push(canoInferior);
 
     let middle_y = top_of_gap + (gap_width / 2);
-    add_power_up(x_pos, middle_y, city);
+    adicionarItem(x_pos, middle_y, city);
   }
-  function make_bird_tilt_appropriately() {
-    if (bird.velocity_y < 0) {
-      bird.angle = -15;
-    } else if (bird.angle < 70) {
-      bird.angle = bird.angle + 4;
+  function inclinarPassaro() {
+    if (passaro.velocity_y < 0) {
+      passaro.angle = -15;
+    } else if (passaro.angle < 70) {
+      passaro.angle = passaro.angle + 4;
     }
   }
-  function show_the_pipes() {
-    for (let i = 0; i < pipes.length; i++) {
-      pipes[i].Do_Frame_Things();
-    }
-  }
-
-  function show_the_power_ups() {
-    for (let i = 0; i < power_ups.length; i++) {
-      power_ups[i].Do_Frame_Things();
+  function mostrarOsCanos() {
+    for (let i = 0; i < canos.length; i++) {
+      canos[i].fazerAtualizacoes();
     }
   }
 
-  function check_for_end_game() {
-    for (let i = 0; i < pipes.length; i++) {
-      if (ImagesTouching(bird, pipes[i])) {
-        if(pipes[i].finish) {
-          game_mode = 'finish'
+  function mostrarItens() {
+    for (let i = 0; i < itens.length; i++) {
+      itens[i].fazerAtualizacoes();
+    }
+  }
+
+  function checarFinalJogo() {
+    for (let i = 0; i < canos.length; i++) {
+      if (tocarImagens(passaro, canos[i])) {
+        if(canos[i].finish) {
+          modoAtual = 'finish'
         } else {
-          game_mode = 'over';
+          modoAtual = 'over';
         }
       }
     }
   }
-  function display_intro_instructions() {
-    if (logoLoaded) {
-      if (deviceType === "PC") {
-        ctx.drawImage(imgLogo, 350, 90, 300, 120);
+  function mostrarInstrucoesInicio() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+    ctx.fillRect(0, 0, myCanvas.width, myCanvas.height);
+    if (logoCarregada) {
+      if (DISPOSITIVO_USUARIO === "PC") {
+        ctx.drawImage(imagemLogo, 350, 90, 300, 120);
       } else {
-        ctx.drawImage(imgLogo, 12.5, 45, 300, 120);
+        ctx.drawImage(imagemLogo, 12.5, 45, 300, 120);
       }
       
     }
+    
     ctx.font = '18px "04b_19"';
     ctx.textAlign = 'center';
-    ctx.fillStyle = 'black';
-    ctx.fillText('Clique na tela para iniciar', myCanvas.width / 2, 350);
+
+    let reiniciarTexto;
+    DISPOSITIVO_USUARIO == 'PC' ? reiniciarTexto='Clique na tela para iniciar' : reiniciarTexto='Clique no botao para iniciar'
+
+    ctx.strokeStyle = 'rgb(82, 55, 71)';
+    ctx.lineWidth = 4;
+    ctx.strokeText(reiniciarTexto, myCanvas.width / 2, 400);
+    ctx.fillStyle = 'rgb(245, 186, 24)';
+    ctx.fillText(reiniciarTexto, myCanvas.width / 2, 400);
   }
 
-  function display_game_over() {
+  function mostrarFimPerdidoJogo() {
     const modalWidth = 250;
     const modalHeight = 120;
     const modalX = (myCanvas.width - modalWidth) / 2;
@@ -235,18 +258,18 @@
     ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
     ctx.fillRect(0, 0, myCanvas.width, myCanvas.height);
 
-    const gameOverText = 'Game Over';
+    const fimJogoPerdidoTexto = 'Game Over';
     ctx.textAlign = 'center';
     ctx.font = '40px "04b_19"';
 
     ctx.strokeStyle = 'rgb(234, 253, 219)';
     ctx.lineWidth = 12;
-    ctx.strokeText(gameOverText, myCanvas.width / 2, modalY - 20);
+    ctx.strokeText(fimJogoPerdidoTexto, myCanvas.width / 2, modalY - 20);
     ctx.strokeStyle = 'rgb(82, 55, 71)';
     ctx.lineWidth = 8;
-    ctx.strokeText(gameOverText, myCanvas.width / 2, modalY - 20);
+    ctx.strokeText(fimJogoPerdidoTexto, myCanvas.width / 2, modalY - 20);
     ctx.fillStyle = 'rgb(245, 186, 24)';
-    ctx.fillText(gameOverText, myCanvas.width / 2, modalY - 20);
+    ctx.fillText(fimJogoPerdidoTexto, myCanvas.width / 2, modalY - 20);
 
     ctx.fillStyle = 'rgb(219, 218, 150)';
     ctx.fillRect(modalX, modalY, modalWidth, modalHeight);
@@ -256,9 +279,9 @@
     ctx.font = '20px "04b_19"';
     ctx.fillStyle = 'rgb(234, 253, 219)';
     const details = [
-      `Cidade: ${cidades[cidadeAtual]}`,
-      `Itens Coletados: ${score}`,
-      `Tempo Total: ${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
+      `Cidade: ${CIDADES[cidadeAtual]}`,
+      `Itens Coletados: ${pontuacao}`,
+      `Tempo Total: ${minutos < 10 ? '0' : ''}${minutos}:${segundos < 10 ? '0' : ''}${segundos}`
     ];
     
     details.forEach((detail, index) => {
@@ -268,15 +291,15 @@
       ctx.strokeText(detail, modalX + modalWidth / 2, yPosition);
       ctx.fillText(detail, modalX + modalWidth / 2, yPosition);
     });
-
-    const restartText = 'Clique na tela para reiniciar';
+    let reiniciarTexto;
+    DISPOSITIVO_USUARIO == 'PC' ? reiniciarTexto='Clique na tela para reiniciar' : reiniciarTexto='Clique no botao para reiniciar'
     ctx.strokeStyle = 'rgb(82, 55, 71)';
     ctx.lineWidth = 4;
-    ctx.strokeText(restartText, myCanvas.width / 2, modalY + modalHeight + 40);
+    ctx.strokeText(reiniciarTexto, myCanvas.width / 2, modalY + modalHeight + 40);
     ctx.fillStyle = 'rgb(245, 186, 24)';
-    ctx.fillText(restartText, myCanvas.width / 2, modalY + modalHeight + 40);
+    ctx.fillText(reiniciarTexto, myCanvas.width / 2, modalY + modalHeight + 40);
   }
-  function display_game_finish() {
+  function mostrarFimJogo() {
     const modalWidth = 250;
     const modalHeight = 150;
     const modalX = (myCanvas.width - modalWidth) / 2;
@@ -311,48 +334,54 @@
 
     ctx.strokeStyle = 'rgb(0, 0, 0)'; 
     ctx.lineWidth = 3; 
-    ctx.strokeText('Cidade: ' + cidades[cidadeAtual], modalX + modalWidth / 2, modalY + 40);
-    ctx.strokeText('Frutas Coletadas: ' + score, modalX + modalWidth / 2, modalY + 70);
-    ctx.strokeText('Tempo Total: ' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds, modalX + modalWidth / 2, modalY + 100);
-    ctx.fillStyle = 'rgb(234, 253, 219)'; // Cor do texto
-    ctx.fillText('Cidade: ' + cidades[cidadeAtual], modalX + modalWidth / 2, modalY + 40);
-    ctx.fillText('Frutas Coletadas: ' + score, modalX + modalWidth / 2, modalY + 70);
-    ctx.fillText('Tempo Total: ' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds, modalX + modalWidth / 2, modalY + 100);
+    ctx.strokeText('Cidade: ' + CIDADES[cidadeAtual], modalX + modalWidth / 2, modalY + 40);
+    ctx.strokeText('Frutas Coletadas: ' + pontuacao, modalX + modalWidth / 2, modalY + 70);
+    ctx.strokeText('Tempo Total: ' + (minutos < 10 ? '0' : '') + minutos + ':' + (segundos < 10 ? '0' : '') + segundos, modalX + modalWidth / 2, modalY + 100);
+    ctx.fillStyle = 'rgb(234, 253, 219)';
+    ctx.fillText('Cidade: ' + CIDADES[cidadeAtual], modalX + modalWidth / 2, modalY + 40);
+    ctx.fillText('Frutas Coletadas: ' + pontuacao, modalX + modalWidth / 2, modalY + 70);
+    ctx.fillText('Tempo Total: ' + (minutos < 10 ? '0' : '') + minutos + ':' + (segundos < 10 ? '0' : '') + segundos, modalX + modalWidth / 2, modalY + 100);
     ctx.font = '20px "04b_19"'; 
 
     ctx.strokeStyle = 'rgb(82, 55, 71)'; 
     ctx.lineWidth = 8; 
-    ctx.strokeText('Clique na tela para reiniciar', myCanvas.width / 2, modalY + modalHeight + 40);
+    let reiniciarTexto;
+    DISPOSITIVO_USUARIO == 'PC' ? reiniciarTexto='Clique na tela para reiniciar' : reiniciarTexto='Clique no botao para reiniciar'
+
+    ctx.strokeText(reiniciarTexto, myCanvas.width / 2, modalY + modalHeight + 40);
     ctx.fillStyle = 'rgb(245, 186, 24)'; 
-    ctx.fillText('Clique na tela para reiniciar', myCanvas.width / 2, modalY + modalHeight + 40);
+    ctx.fillText(reiniciarTexto, myCanvas.width / 2, modalY + modalHeight + 40);
   }
 
-  function display_bar_running_along_bottom() {
-    if (deviceType === "PC") {
-      ctx.drawImage(bottom_bar, 0, myCanvas.height - bottom_bar.height, 1000, bottom_bar.height);
+  function mostrarBarraAlongada() {
+    if (DISPOSITIVO_USUARIO === "PC") {
+      ctx.drawImage(barraInferior, 0, myCanvas.height - barraInferior.height, 1000, barraInferior.height);
     } else {
-      if (bottom_bar_offset < -23) bottom_bar_offset = 0;
-      ctx.drawImage(bottom_bar, bottom_bar_offset, myCanvas.height - bottom_bar.height);
+      if (deslocamentoBarraInferior
+ < -23) deslocamentoBarraInferior
+ = 0;
+      ctx.drawImage(barraInferior, deslocamentoBarraInferior
+, myCanvas.height - barraInferior.height);
     }
   }
 
-  function reset_game() {
-    bird.y = myCanvas.height / 2;
-    bird.angle = 0;
-    pipes = []; 
-    power_ups = []; 
-    add_all_my_pipes(); 
-    score = 0; 
-    number_mission = 0;
-    minutes = 0; 
-    seconds = 0; 
-    number_mission = 2;
+  function reiniciarJogo() {
+    passaro.y = myCanvas.height / 2;
+    passaro.angle = 0;
+    canos = []; 
+    itens = []; 
+    adicionarCanos(); 
+    pontuacao = 0; 
+    numeroMissao = 0;
+    minutos = 0; 
+    segundos = 0; 
+    numeroMissao = 2;
     cidadeAtual = 0;
   }
 
-  function add_all_my_pipes() {
+  function adicionarCanos() {
     const gapWidth = 180;
-    const pipeConfigs = [
+    const canoConfiguracao = [
       { x: 500, y: 100, id: 1 },{ x: 800, y: 50, id: 2 },{ x: 1000, y: 250, id: 3 },{ x: 1200, y: 150, id: 4 },
       { x: 1600, y: 100, id: 5 },{ x: 1800, y: 150, id: 6 },{ x: 2000, y: 200, id: 7 },{ x: 2200, y: 250, id: 8 },
       { x: 2400, y: 60, id: 9 },{ x: 2700, y: 300, id: 10 },{ x: 3000, y: 100, id: 11 },{ x: 3300, y: 250, id: 12 },
@@ -360,120 +389,121 @@
       { x: 4700, y: 150, id: 4 },{ x: 4900, y: 100, id: 5 },{ x: 5110, y: 150, id: 6 },{ x: 5280, y: 200, id: 7 },
       { x: 5400, y: 200, id: 8 },{ x: 5690, y: 60, id: 9 },{ x: 5900, y: 270, id: 10 },{ x: 6100, y: 140, id: 11 },
       { x: 6240, y: 250, id: 12 },{ x: 6400, y: 80, id: 13 }];
-    pipeConfigs.forEach(config => {
-        add_pipe(config.x, config.y, gapWidth, config.id);
+    canoConfiguracao.forEach(config => {
+        adicionarCano(config.x, config.y, gapWidth, config.id);
     });
-    const finishLine = new MySprite('http://s2js.com/img/etc/flappyend.png');
-    finishLine.x = 6700;
-    finishLine.velocity_x = pipe_speed;
-    finishLine.finish = true;
-    pipes.push(finishLine);
+    const linhaFinal = new MySprite('http://s2js.com/img/etc/flappyend.png');
+    linhaFinal.x = 6700;
+    linhaFinal.velocity_x = VELOCIDADE_CANO;
+    linhaFinal.finish = true;
+    canos.push(linhaFinal);
 }
   
-  function add_power_up(x_pos, y_pos) {
-    powerUpCollectCount++;
+  function adicionarItem(x_pos, y_pos) {
+    itensColetado++;
 
-    let imageIndex = Math.floor(powerUpCollectCount / 2) % powerUpImages.length;
-    let power_up = new MySprite(powerUpImages[imageIndex]);
+    let imageIndex = Math.floor(itensColetado / 2) % ITENS_IMAGENS.length;
+    let miniItem = new MySprite(ITENS_IMAGENS[imageIndex]);
   
-    power_up.x = x_pos;
-    power_up.y = y_pos;
-    power_up.velocity_x = pipe_speed;
-    power_ups.push(power_up);
-    divpowerup++;
+    miniItem.x = x_pos;
+    miniItem.y = y_pos;
+    miniItem.velocity_x = VELOCIDADE_CANO;
+    itens.push(miniItem);
+    divItens++;
   }
 
-  function add_power_up_in_middle(x_pos, top_of_gap, gap_width, city) {
+  function adicionarItemMeio(x_pos, top_of_gap, gap_width, city) {
     let middle_y = top_of_gap + (gap_width / 2);
-    add_power_up(x_pos, middle_y, city);
+    adicionarItem(x_pos, middle_y, city);
   }
 
-  function check_for_power_up() {
-    for (let i = 0; i < power_ups.length; i++) {
-      if (ImagesTouching(bird, power_ups[i])) {
-        power_ups[i].visible = false; 
-        score += 1;
-        if (score === number_mission) {
+  function checarItem() {
+    for (let i = 0; i < itens.length; i++) {
+      if (tocarImagens(passaro, itens[i])) {
+        itens[i].visible = false; 
+        pontuacao += 1;
+        if (pontuacao === numeroMissao) {
           cidadeAtual += 1;
-          number_mission += 2;
+          numeroMissao += 2;
         }
       }
     }
   }
 
-  function drawMenu() {
+  function desenharMenu() {
     const posY = 10;
 
-    let plate = new Image();
-    plate.src = './assets/images/FlappyPlate.webp';
+    let placa = new Image();
+    placa.src = './assets/images/FlappyPlate.webp';
 
-    ctx.drawImage(plate, 0, 0, 140, 110);
+    ctx.drawImage(placa, 0, 0, 140, 110);
 
     ctx.textAlign = 'left';
     ctx.font = '11px "04b_19"';
     
+    
     let posXText = 28;
-    let timeText = 'Tempo: ' + (minutes < 10 ? '0' : '') + minutes + ' : ' + (seconds < 10 ? '0' : '') + seconds;
-    let itemsText = 'Itens: ' + score;
-    let cityText = cidades[cidadeAtual];
-    ctx.fillStyle = 'rgb(250, 250,250)'; // Cor do texto
+    let timeText = 'Tempo: ' + (minutos < 10 ? '0' : '') + minutos + ' : ' + (segundos < 10 ? '0' : '') + segundos;
+    let itemsText = 'Itens: ' + pontuacao;
+    let cityText = CIDADES[cidadeAtual];
+    ctx.fillStyle = 'rgb(250, 250,250)';
     ctx.fillText(timeText, posXText, posY + 40);
     ctx.fillText(itemsText, posXText, posY + 60);
     ctx.fillText(cityText, posXText, posY + 80);
 }
 
 
-  function increment_time() {
-    if (ingame == true) {
-      seconds++;
-      if (seconds === 60) {
-        seconds = 0;
-        minutes++;
+  function adicionarTemporizador() {
+    if (emJogo == true) {
+      segundos++;
+      if (segundos === 60) {
+        segundos = 0;
+        minutos++;
       }
     }
   }
 
-  function Do_a_Frame() {
+  function FazerAcao() {
     ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-    bird.Do_Frame_Things();
-    display_bar_running_along_bottom();
-    switch (game_mode) {
+    passaro.fazerAtualizacoes();
+    mostrarBarraAlongada();
+    switch (modoAtual) {
       case 'prestart': {
-        display_intro_instructions();
+        mostrarInstrucoesInicio();
         break;
       }
       case 'running': {
-        time_game_last_running = new Date();
-        bottom_bar_offset = bottom_bar_offset + pipe_speed;
-        show_the_pipes();
-        show_the_power_ups();
-        make_bird_tilt_appropriately();
-        make_bird_slow_and_fall();
-        check_for_end_game();
-        check_for_power_up();
-        drawMenu();
-        ingame = true;
+        horaUltimaPartida = new Date();
+        deslocamentoBarraInferior += VELOCIDADE_CANO;
+        mostrarOsCanos();
+        mostrarItens();
+        inclinarPassaro();
+        fazerPassaroCairLento();
+        checarFinalJogo();
+        checarItem();
+        desenharMenu();
+        emJogo = true;
         break;
       }
       case 'over': {
-        make_bird_slow_and_fall();
-        display_game_over();
-        ingame = false;
+        fazerPassaroCairLento();
+        mostrarFimPerdidoJogo();
+        emJogo = false;
         break;
       }
       case 'finish': {
-        display_game_finish();
-        ingame = false;
+        mostrarFimJogo();
+        emJogo = false;
         break;
       }
     }
   }
-  let bottom_bar = new Image();
-  bottom_bar.src = './assets/images/flappybottom.webp'; 
+  let barraInferior = new Image();
+  barraInferior.src = './assets/images/flappybottom.webp'; 
 
-  let bird = new MySprite('./assets/images/FlappyBird.webp'); 
-  bird.x = myCanvas.width / 4.0;
-  bird.y = myCanvas.height / 2;
+  let passaro = new MySprite('./assets/images/FlappyBird.webp'); 
+  passaro.x = myCanvas.width / 4.0;
+  passaro.y = myCanvas.height / 2;
 
-  setInterval(increment_time, 1000);
-  setInterval(Do_a_Frame, 1000 / FPS);
+  setInterval(adicionarTemporizador, 1000);
+  setInterval(FazerAcao, 1000 / FPS);

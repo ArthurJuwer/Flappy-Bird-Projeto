@@ -16,26 +16,49 @@ html, body {
 }
 
 body {
+    
     display: flex;
     justify-content: center;
+    flex-direction: column;
     align-items: center;
     font-family: '04b_19', sans-serif;
     background: #000;
 }
 
 canvas#myCanvas {
-    background-image: url(../images/FlappyBack.svg);
-    background-size: cover; /* Para cobrir o canvas inteiro */
-    background-position: center;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0.16)), url(../images/FlappyBack.svg);
+    background-size: cover;
+    background-position: 0% bottom;
     background-repeat: no-repeat;
     width: 100%;
     height: 100%;
-    display: block; /* Remover espaços em branco ao redor do canvas */
+    display: block;
 }
+#jumpButton{
+    display: none;
+}
+
 
 @media screen and (max-width: 800px) {
     canvas#myCanvas {
         width: 100%;
         height: auto;
+    }
+    #jumpButton {
+        display: block;
+        margin-top: 1rem;
+        background: #E06119;
+        border: 0.2rem solid #FDFEFD;
+        width: 10rem;
+        height: 2.725rem;
+        color: #ebebeb;
+        text-shadow: 2px 2px 3px #523747;
+        letter-spacing: 0.1rem;
+        font-size: 1rem;
+        font-family: '04b_19', sans-serif;
+        border-radius: 8px;
+        cursor: pointer;
+        outline: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 }
