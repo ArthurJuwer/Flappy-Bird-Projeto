@@ -20,14 +20,18 @@ body {
     justify-content: center;
     align-items: center;
     background-image: url('../images/FlappyBack.svg');
+    width: 100%;
     background-size: cover;
     background-position: center;
 }
 
 .game-container {
-    max-width: 36.25rem;
+    margin: 5rem;
+    max-width: 60rem;
     width: 100%;
     text-align: center;
+    display: flex;
+    justify-content: center;
     position: relative;
 }
 
@@ -36,20 +40,24 @@ body {
     backdrop-filter: blur(0.625rem);
     padding: 1.25rem;
     border-radius: 0.625rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 .game-logo {
     width: 100%;
-    max-width: 18.75rem;
+    max-width: 25rem;
     margin-bottom: 1.25rem;
 }
 
 .ptrBtn {
     background-color: black;
     color: white;
-    border-radius: 3.125rem;
+    border-radius: 1.125rem;
     height: 3.75rem;
-    width: 10rem;
+    width: 15rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -60,8 +68,10 @@ body {
 }
 
 .game-description {
-    font-size: 1rem;
+    display: flex;
+    font-size: 1.25rem;
     margin-bottom: 1.25rem;
+    width: 80%;
 }
 
 .ptrs {
@@ -78,4 +88,10 @@ body {
     width: 100%;
     max-width: 18.75rem;
     margin-bottom: 0.625rem;
+}
+
+@media screen and (max-width: 800px) {
+    .game-description {
+        width: 100%;
+    }
 }
